@@ -112,10 +112,19 @@ function inventario(inventario){
     let ordem
     
     for(let x in inventario){
+
         if(Number(x) === 0){
-            ordem = `[${Number(x)+1}] ${inventario[x].nome}`
+            if(inventario[x].quantidade){
+                ordem = `[${Number(x)+1}] ${inventario[x].nome} ==> ${inventario[x].quantidade}`
+            }else{
+                ordem = `[${Number(x)+1}] ${inventario[x].nome}`
+            }
         }else{
-            ordem += `\n[${Number(x)+1}] ${inventario[x].nome}`
+            if(inventario[x].quantidade){
+                ordem += `\n[${Number(x)+1}] ${inventario[x].nome} ==> ${inventario[x].quantidade}`
+            }else{
+                ordem += `\n[${Number(x)+1}] ${inventario[x].nome}`
+            }
         }
     }
     return ordem
@@ -179,7 +188,7 @@ function equipamentos(equipa){
 function equipar(jog, indice){
     let jogClasse
     let itenclasse
-    let compararParte = ["Capacete","Peitoral","Calça","Bota","Arma"]
+    let compararParte = ["Capacete","Peitoral","Calça","Bota","Arma", "Poção"]
     let pegarIndice = [1,2,3,4,5]
     let indiceEquip 
 
@@ -289,9 +298,33 @@ function comprar (item, quatidade){
 }
 
 function vender(itemInven){
-    jogador.dinheiro += jogador.inventario[itemInven].valor
-    jogador.inventario.splice(itemInven, 1)
-    return jogador
+    if(jogador.inventario[itemInven].quantidade){
+        let venderQuantia = Number(prompt(`Quantos?`))
+        if(venderQuantia >= 0){
+            alert()
+            for(let x = 0; x <= venderQuantia; x++){
+                if(jogador.inventario[itemInven].quantidade !== 0){
+                    jogador.inventario[itemInven].quantidade -= x
+                    jogador.dinheiro += jogador.inventario[itemInven].valor
+                    if(jogador.inventario[itemInven].quantidade === 0){
+                        jogador.inventario.splice(itemInven, 1)
+                    }
+                }else if(jogador.inventario[itemInven].quantidade === 0){
+                    jogador.inventario.splice(itemInven, 1)
+                }else{
+                    x = venderQuantia
+                }
+            }
+        }
+    } else{
+        jogador.dinheiro += jogador.inventario[itemInven].valor
+        jogador.inventario.splice(itemInven, 1)
+        return jogador
+    }
+}
+
+function pocao (){
+
 }
 
 function jogXp (){
@@ -362,11 +395,19 @@ let itens = [
         classe: "Arma",
         ataque: Number(20),
         valor: 15
-    },marreta = {
+    },
+    marreta = {
         nome: "Marreta",
         classe: "Arma",
         ataque: Number(20),
         valor: 15
+    },
+    pocaodevida = {
+        nome: "Poção de vida",
+        classe: "Poção",
+        cura: 5,
+        valor: 5,
+        quantidade: 5
     },]
 
 let inimigos =[
@@ -444,7 +485,7 @@ switch(esc){
         jogador.def = jogador.def+7
         jogador.mag = jogador.mag+20
         jogador.des = jogador.des+3
-        jogador.inventario = [itens[2], itens[0], itens[1], itens[3]]
+        jogador.inventario = [itens[2], itens[0], itens[1], itens[3], itens[6]]
         break
     case 2:
         jogador.classe = "Arqueiro"
@@ -508,11 +549,16 @@ do{
     }else if(acao === 2){
         console.log(`Inventário:\n${inventario(jogador.inventario)}`)//Motra o inventário e os equipamentos equipados
         item = Number(prompt(`Inventário:\n${inventario(jogador.inventario)}`)) - 1
+        
         if(jogador.inventario[item]){
-            acao = Number(prompt("[1] Equipar\n[2] Vender"))
-            if(acao === 1){
+            if(jogador.inventario[item].classe === "Poção"){
+                acao = Number(prompt("[1] Vender"))+1
+            }else{
+                acao = Number(prompt("[1] Equipar\n[2] Vender"))
+            }
+            if(acao === 1 && jogador.inventario[item].classe !== "Poção"){
                 equipar(jogador.inventario, item)
-            } else if(acao === 2){
+            }else if(acao === 2){
                 vender(item)
             }
         }       
