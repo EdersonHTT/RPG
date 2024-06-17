@@ -278,25 +278,27 @@ function loja (itens){
     return ordem
 }
 
-function comprar (item, quatidade){
+function comprar (item, quatia){
     if(jogador.dinheiro > 0){
         if(itens[lojaItens[item]].quantidade){
-            for(let x =0; x < quatidade; x++){
-                if(jogador.inventario.includes(lojaItens[item])){
-                    jogador.inventario[lojaItens[item]].quantidade += x
-                    jogador.dinheiro -= itens[lojaItens[item]].valor
-                }else{
-                    jogador.inventario.push(itens[lojaItens[item]])
+            for(let x =0; x <= quatia; x++){
+                if(quatia > x){
+                    if(jogador.inventario.includes(itens[lojaItens[item]])){
+                        itens[lojaItens[item]].quantidade += 1
+                        jogador.dinheiro -= itens[lojaItens[item]].valor
+                    }else{
+                        jogador.inventario.push(itens[lojaItens[item]])
+                    } 
                 }
             }
         }else{
-            for(let x =0; x < quatidade; x++){
+            for(let x =0; x < quatia; x++){
                 if(jogador.dinheiro > 0 && jogador.dinheiro >= itens[lojaItens[item]].valor){
                     jogador.inventario.push(itens[lojaItens[item]])
                     jogador.dinheiro -= itens[lojaItens[item]].valor
                 } else {
                     alert(`Não há dinheiro o suficiente.`)
-                    x = quatidade
+                    x = quatia
                 }
             }
         }
