@@ -280,13 +280,24 @@ function loja (itens){
 
 function comprar (item, quatidade){
     if(jogador.dinheiro > 0){
-        for(let x =0; x < quatidade; x++){
-            if(jogador.dinheiro > 0 && jogador.dinheiro >= itens[lojaItens[item]].valor){
-                jogador.inventario.push(itens[lojaItens[item]])
-                jogador.dinheiro -= itens[lojaItens[item]].valor
-            } else {
-                alert(`Não há dinheiro o suficiente.`)
-                x = quatidade
+        if(itens[lojaItens[item]].quantidade){
+            for(let x =0; x < quatidade; x++){
+                if(jogador.inventario.includes(lojaItens[item])){
+                    jogador.inventario[lojaItens[item]].quantidade += x
+                    jogador.dinheiro -= itens[lojaItens[item]].valor
+                }else{
+                    jogador.inventario.push(itens[lojaItens[item]])
+                }
+            }
+        }else{
+            for(let x =0; x < quatidade; x++){
+                if(jogador.dinheiro > 0 && jogador.dinheiro >= itens[lojaItens[item]].valor){
+                    jogador.inventario.push(itens[lojaItens[item]])
+                    jogador.dinheiro -= itens[lojaItens[item]].valor
+                } else {
+                    alert(`Não há dinheiro o suficiente.`)
+                    x = quatidade
+                }
             }
         }
     } else {
@@ -300,27 +311,21 @@ function comprar (item, quatidade){
 function vender(itemInven){
     if(jogador.inventario[itemInven].quantidade){
         let venderQuantia = Number(prompt(`Quantos?`))
-        if(venderQuantia >= 0){
-            alert()
-            for(let x = 0; x <= venderQuantia; x++){
-                if(jogador.inventario[itemInven].quantidade !== 0){
-                    jogador.inventario[itemInven].quantidade -= x
-                    jogador.dinheiro += jogador.inventario[itemInven].valor
-                    if(jogador.inventario[itemInven].quantidade === 0){
-                        jogador.inventario.splice(itemInven, 1)
-                    }
-                }else if(jogador.inventario[itemInven].quantidade === 0){
-                    jogador.inventario.splice(itemInven, 1)
-                }else{
-                    x = venderQuantia
-                }
+        if(venderQuantia > 0){
+            while(venderQuantia > 0 &&jogador.inventario[itemInven].quantidade > 0){
+                jogador.inventario[itemInven].quantidade -= 1
+                jogador.dinheiro += jogador.inventario[itemInven].valor
+                venderQuantia -= 1
+            }
+            if(jogador.inventario[itemInven].quantidade === 0){
+                jogador.inventario.splice(itemInven, 1)
             }
         }
     } else{
         jogador.dinheiro += jogador.inventario[itemInven].valor
         jogador.inventario.splice(itemInven, 1)
-        return jogador
     }
+   return jogador 
 }
 
 function pocao (){
