@@ -1,4 +1,4 @@
-let comecar = Number(prompt(`Começar\n[1] Sim\n[2] Sim`))
+let comecar = Number(prompt(`Começar\n[1] Sim\n[2] Yes`))
 
 if(comecar === 1){
 function batalha (ini){//função batalha
@@ -25,12 +25,18 @@ function batalha (ini){//função batalha
                     taxaDano = Math.floor(Math.random()*danoPlayer)
                     taxaIni = Math.floor(Math.random()*danoIni)
     
-                    if(taxaDano > danoPlayer - ini.des){
+                    if(taxaDano > ini.des -3){
                         ini.hp -= danoPlayer
+                    }else{
+                        alert("Você errou!")
                     }
-                    if(taxaIni > danoIni - jogador.des){
+
+                    if(taxaIni > jogador.des -3){
                         jogador.hp -= danoIni
+                    }else{
+                        alert("Você esquivou!")
                     }
+
                 }else if(atacar === 2){
                     if(jogador.classe !== "Guerreiro"){
                         danoPlayer = 5 + jogador.mag - ini.def
@@ -131,11 +137,11 @@ function inventario(inventario){
 }
 
 function desEquip(desequip){
-    let parte = ["Capacete","Peitoral","Calça","Bota", "Arma"]
+    let parte = ["Capacete","Peitoral","Calça","Bota", "Arma", "Poção 1", "Poção 2"]
     let jogClasse
     
     if(equipamento[desequip] !== parte[desequip]){
-        if(parte[desequip] !== parte[parte.length-1]){
+        if(parte[desequip] !== parte[parte.length-2]){
             jogador.inventario.push(equipamento[desequip])
                 jogador.def -= equipamento[desequip].def
                 equipamento[desequip] = parte[desequip]
@@ -162,19 +168,32 @@ function desEquip(desequip){
 
 function equipamentos(equipa){
     let ordem
-    let classes = ["Capacete","Peitoral","Calça","Bota","Arma"]
-    let localEquip = [1,2,3,4,5]
+    let classes = ["Capacete","Peitoral","Calça","Bota","Arma","Poção"]
+    let localEquip = [1,2,3,4,5,6,7]
     
     for(let x in localEquip){
         localEquip[Number(x)] = equipa[Number(x)]
-        if(equipamento[Number(x)].classe){
-            if(localEquip[Number(x)] === localEquip[0]){
-                ordem = `[${Number(x)+1}] [${classes[Number(x)]}]====> <${localEquip[Number(x)].nome}>`
-            }else if(localEquip[x] !== localEquip[0]){
-                ordem += `\n[${Number(x)+1}] [${classes[Number(x)]}]====> <${localEquip[Number(x)].nome}>`
+        if(equipa[Number(x)].classe){
+            if(!equipa[Number(x)].quantidade){
+                if(localEquip[Number(x)] === localEquip[0]){
+                    ordem = `[${Number(x)+1}] [${classes[Number(x)]}]====> <${localEquip[Number(x)].nome}>`
+                }else if(localEquip[x] !== localEquip[0]){
+                    ordem += `\n[${Number(x)+1}] [${classes[Number(x)]}]====> <${localEquip[Number(x)].nome}>`
+                }
+            }else{
+                classes[5] = "Poção 1"
+                classes.push("Poção 2")
+                
+                if(localEquip[Number(x)] !== localEquip[0]){
+                    ordem += `\n[${Number(x)+1}] [${classes[Number(x)]}]====> <${localEquip[Number(x)].nome}> [${equipa[Number(x)].quantidade}]`
+                }
             }
         }else if(equipa[Number(x)] !== equipa.classe){
-            
+            classes[5] = "Poção 1"
+            classes.push("Poção 2")
+            localEquip[5] = "Poção 1"
+            localEquip[6] = "Poção 2"
+
             if(localEquip[Number(x)] === localEquip[0]){
                 ordem = `[${Number(x)+1}] [${classes[Number(x)]}]====> <${localEquip[Number(x)]}>`
             }else if(localEquip[x] !== localEquip[0]){
@@ -188,11 +207,10 @@ function equipamentos(equipa){
 function equipar(jog, indice){
     let jogClasse
     let itenclasse
-    let compararParte = ["Capacete","Peitoral","Calça","Bota","Arma", "Poção"]
-    let pegarIndice = [1,2,3,4,5]
+    let compararParte = ["Capacete","Peitoral","Calça","Bota","Arma","Poção"]
     let indiceEquip 
 
-    for(let x in pegarIndice){
+    for(let x in compararParte){
         if(compararParte[Number(x)]===jog[indice].classe){
             indiceEquip = Number(x)
         }
@@ -237,7 +255,33 @@ function equipar(jog, indice){
                 jog.splice(indice, 1)
             }
         }
+    }else if(indiceEquip > 4 && indiceEquip <= 6){
+        if(equipamento[5] === "Poção 1"){
+            equipamento[5] = jog[indice]
+            jog.splice(indice, 1)
+        }else if(jog[indice].nome === equipamento[5].nome){
+            equipamento[5].quantidade += jog[indice].quantidade
+            jog.splice(indice, 1)
+        }else if(equipamento[6] === "Poção 2"){
+            equipamento[6] = jog[indice]
+            jog.splice(indice, 1)
+        }else if(jog[indice].nome === equipamento[6].nome){
+            equipamento[6].quantidade += jog[indice].quantidade
+            jog.splice(indice, 1)
+        } else if(jog[indice] !== equipamento[5] && jog[indice] !== equipamento[6]){
+            let escolha = Number(prompt(`Tocar com:\n[1] ${equipamento[5]}\n[2] ${equipamento[6]}`))
+            if(escolha === 1){
+                jog.push(equipamento[5])
+                equipamento[5] = jog[indice]
+                jog.splice(indice, 1)
+            }else{
+                jog.push(equipamento[6])
+                equipamento[6] = jog[indice]
+                jog.splice(indice, 1)
+            }
+        }
     }
+    alert(`${equipamento[indiceEquip].nome} Equipado!`)
     return equipamento[indiceEquip]
 }
 
@@ -282,13 +326,22 @@ function comprar (item, quatia){
     if(jogador.dinheiro > 0){
         if(itens[lojaItens[item]].quantidade){
             for(let x =0; x <= quatia; x++){
-                if(quatia > x){
-                    if(jogador.inventario.includes(itens[lojaItens[item]])){
-                        itens[lojaItens[item]].quantidade += 1
-                        jogador.dinheiro -= itens[lojaItens[item]].valor
-                    }else{
-                        jogador.inventario.push(itens[lojaItens[item]])
-                    } 
+                if(jogador.dinheiro > 0 && jogador.dinheiro >= itens[lojaItens[item]].valor){
+                    if(quatia > x){
+                        if(jogador.inventario.includes(itens[lojaItens[item]])){
+                            for(let x in jogador.inventario){
+                                if(jogador.inventario[x] === itens[lojaItens[item]]){
+                                    jogador.inventario[x].quantidade += 1
+                                }
+                            }
+                            jogador.dinheiro -= itens[lojaItens[item]].valor
+                        }else{
+                            jogador.inventario.push(itens[lojaItens[item]])
+                        } 
+                    }
+                } else {
+                    alert(`Não há dinheiro o suficiente.`)
+                    x = quatia
                 }
             }
         }else{
@@ -328,10 +381,6 @@ function vender(itemInven){
         jogador.inventario.splice(itemInven, 1)
     }
    return jogador 
-}
-
-function pocao (){
-
 }
 
 function jogXp (){
@@ -375,94 +424,28 @@ dinheiro: 100
 }
 
 let itens = [
-    chapeuDeMago = {
-        nome: "chapeu de mago", 
-        classe: "Capacete",
-        def: 2,
-        valor: 10
-    },
-    chapeu = {
-        nome: "chapeu", 
-        classe: "Capacete",
-        def: 2,
-        valor: 5
-    },
-    varinha = {
-        nome: "Varinha", 
-        classe: "Arma",
-        mag: Number(15),
-        valor: 15
-    },
-    livro = {
-        nome: "Livro",
-        valor: 5
-    },
-    espada = {
-        nome: "espada",
-        classe: "Arma",
-        ataque: Number(20),
-        valor: 15
-    },
-    marreta = {
-        nome: "Marreta",
-        classe: "Arma",
-        ataque: Number(20),
-        valor: 15
-    },
-    pocaodevida = {
-        nome: "Poção de vida",
-        classe: "Poção",
-        cura: 5,
-        valor: 5,
-        quantidade: 5
-    },]
+    chapeuDeMago = {nome: "chapeu de mago", classe: "Capacete", def: 2,valor: 10},
+    chapeu = {nome: "chapeu", classe: "Capacete", def: 2,valor: 5},
+    varinha = {nome: "Varinha", classe: "Arma", mag: Number(15),valor: 15},
+    livro = {nome: "Livro", valor: 5},
+    espada = {nome: "espada", classe: "Arma", taque: Number(20),valor: 15},
+    marreta = {nome: "Marreta", classe: "Arma", ataque: Number(20),valor: 15},
+    pocaodevida = {nome: "Poção de vida", classe: "Poção",cura: 5,valor: 5,quantidade: 5},
+    pocaodeforca = {nome: "Poção de força", classe: "Poção",forca: 5,valor: 5,quantidade: 1},
+    pocaodemagia = {nome: "Poção de magia", classe: "Poção",mag: 5,valor: 5,quantidade: 1},
+]
+
 
 let inimigos =[
-rato={
-    nome:"Mestre Splinter",
-    hp: 15,
-    forca: 5,
-    def: 5,
-    des: 5,
-    drops:[],
-    xp: 50
-}, 
-Pato={
-    nome:"Ganso",
-    hp: 15,
-    forca: 5,
-    def: 5,
-    des: 5,
-    drops:[],
-    xp: 50
-},goblin={
-    nome:"Goblin",
-    hp: 15,
-    forca: 5,
-    def: 5,
-    des: 5,
-    drops:[],
-    xp: 50
-},lobo={
-    nome:"Lobo Pidão",
-    hp: 15,
-    forca: 5,
-    def: 5,
-    des: 5,
-    drops:[],
-    xp: 50
-},atumalaca={
-    nome:"Atumalaca",
-    hp: 50,
-    forca: 15,
-    def: 10,
-    des: 10,
-    drops:[],
-    xp: 150
-}]
+    rato = {nome:"Mestre Splinter", hp: 15, forca: 5, def: 5, des: 5, drops:[], xp: 50}, 
+    pato = {nome:"Ganso", hp: 15, forca: 5, def: 5, des: 5, drops:[], xp: 50},
+    goblin = {nome:"Goblin",hp: 15,forca: 5,def: 5,des: 5,drops:[],xp: 50},
+    lobo = {nome:"Lobo Pidão",hp: 15,forca: 5,def: 5,des: 5,drops:[],xp: 50},
+    atumalaca = {nome:"Atumalaca",hp: 50,forca: 15,def: 10,des: 10,drops:[],xp: 150},
+]
 
 
-let equipamento = ['Capacete', 'Peitoral', 'Calça', 'Bota', 'Arma']//Guarda os itens do jogo
+let equipamento = ['Capacete', 'Peitoral', 'Calça', 'Bota', 'Arma', "Poção 1", "Poção 2"]//Guarda os itens do jogo
 let lixo = []
 let acao//Para as açoes
 let inimigosMortos = 0
@@ -473,7 +456,6 @@ let subirStats = 2
 let umaVez = 1
 let lojaItens = []
 let lojaIni = 0
-
 
 console.log("===Bem vindo(a)=====\nVamos criar seu personagem.")//Boas vindas
 
@@ -558,12 +540,9 @@ do{
         item = Number(prompt(`Inventário:\n${inventario(jogador.inventario)}`)) - 1
         
         if(jogador.inventario[item]){
-            if(jogador.inventario[item].classe === "Poção"){
-                acao = Number(prompt("[1] Vender"))+1
-            }else{
-                acao = Number(prompt("[1] Equipar\n[2] Vender"))
-            }
-            if(acao === 1 && jogador.inventario[item].classe !== "Poção"){
+            acao = Number(prompt("[1] Equipar\n[2] Vender"))
+
+            if(acao === 1){
                 equipar(jogador.inventario, item)
             }else if(acao === 2){
                 vender(item)
