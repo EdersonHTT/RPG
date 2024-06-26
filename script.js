@@ -141,13 +141,13 @@ function desEquip(desequip){
     let jogClasse
     
     if(equipamento[desequip] !== parte[desequip]){
-        if(parte[desequip] !== parte[parte.length-2]){
+        if(parte[desequip] !== parte[parte.length-3]){
             jogador.inventario.push(equipamento[desequip])
                 jogador.def -= equipamento[desequip].def
                 equipamento[desequip] = parte[desequip]
         }else{
             jogador.inventario.push(equipamento[desequip])
-            if(parte[desequip] === parte[parte.length-1]){
+            if(parte[desequip] === parte[parte.length-3]){
                 if(equipamento[Number(desequip)].mag){
                     jogClasse = `mag`
                 }else{
@@ -157,7 +157,7 @@ function desEquip(desequip){
 
             if(equipamento[desequip][jogClasse]){
 
-                jogador[jogClasse]-= equipamento[desequip][jogClasse]
+                jogador[jogClasse] -= equipamento[desequip][jogClasse]
                 equipamento[desequip] = parte[desequip]
 
             }
@@ -257,13 +257,14 @@ function equipar(jog, indice){
         }
     }else if(indiceEquip > 4 && indiceEquip <= 6){
         if(equipamento[5] === "Poção 1"){
-            equipamento[5] = jog[indice]
+            equipamento[5] = {...jog[indice]}
             jog.splice(indice, 1)
         }else if(jog[indice].nome === equipamento[5].nome){
+            alert(equipamento[5].quantidade)
             equipamento[5].quantidade += jog[indice].quantidade
             jog.splice(indice, 1)
         }else if(equipamento[6] === "Poção 2"){
-            equipamento[6] = jog[indice]
+            equipamento[6] = {...jog[indice]}
             jog.splice(indice, 1)
         }else if(jog[indice].nome === equipamento[6].nome){
             equipamento[6].quantidade += jog[indice].quantidade
@@ -271,11 +272,21 @@ function equipar(jog, indice){
         } else if(jog[indice] !== equipamento[5] && jog[indice] !== equipamento[6]){
             let escolha = Number(prompt(`Tocar com:\n[1] ${equipamento[5]}\n[2] ${equipamento[6]}`))
             if(escolha === 1){
-                jog.push(equipamento[5])
+                for(let x in itens){
+                    if(itens[x].nome === equipamento[5].nome){
+                        itens[x].quantidade = equipamento[5].quantidade
+                        jog.push(itens[x])
+                    }
+                }
                 equipamento[5] = jog[indice]
                 jog.splice(indice, 1)
             }else{
-                jog.push(equipamento[6])
+                for(let x in itens){
+                    if(itens[x].nome === equipamento[6].nome){
+                        itens[x].quantidade = equipamento[6].quantidade
+                        jog.push(itens[x])
+                    }
+                }
                 equipamento[6] = jog[indice]
                 jog.splice(indice, 1)
             }
@@ -337,6 +348,8 @@ function comprar (item, quatia){
                             jogador.dinheiro -= itens[lojaItens[item]].valor
                         }else{
                             jogador.inventario.push(itens[lojaItens[item]])
+                            jogador.inventario[jogador.inventario.length-1].quantidade = 1
+                            jogador.dinheiro -= itens[lojaItens[item]].valor
                         } 
                     }
                 } else {
@@ -445,8 +458,7 @@ let inimigos =[
 ]
 
 
-let equipamento = ['Capacete', 'Peitoral', 'Calça', 'Bota', 'Arma', "Poção 1", "Poção 2"]//Guarda os itens do jogo
-let lixo = []
+let equipamento = ['Capacete', 'Peitoral', 'Calça', 'Bota', 'Arma', "Poção 1", "Poção 2"]//Guarda os equipamentos do jogo
 let acao//Para as açoes
 let inimigosMortos = 0
 let sair
@@ -455,7 +467,8 @@ let xpMaximo = 100
 let subirStats = 2
 let umaVez = 1
 let lojaItens = []
-let lojaIni = 0
+let lojaIni = 0  
+let guardar  
 
 console.log("===Bem vindo(a)=====\nVamos criar seu personagem.")//Boas vindas
 
@@ -474,7 +487,7 @@ switch(esc){
         jogador.def = jogador.def+7
         jogador.mag = jogador.mag+20
         jogador.des = jogador.des+3
-        jogador.inventario = [itens[2], itens[0], itens[1], itens[3], itens[6]]
+        jogador.inventario = [itens[2], itens[0], itens[1], itens[3], {...itens[6]}]
         break
     case 2:
         jogador.classe = "Arqueiro"
